@@ -80,11 +80,57 @@ This will run:
 
 ### Reference Preparation
 
-The reference FASTA must be indexed with `bwa` and `samtools faidx`:
+The Integrase reference may be used for both CRISPR and Integrase samples when both types of samples are to be jointly analyzed.
+
+#### CRISPR Reference Preparation
+
+For CRISPR samples, the reference FASTA must be indexed with `bwa` and `samtools faidx`:
 
 ```console
 bwa index ref.fasta
 samtools faidx ref.fasta
+samtools dict ref.fasta > ref.dict
+```
+
+#### Integrase Reference Preparation
+
+For Integrase samples, the GRCh38 (p14) genome is modified to append:
+
+1. The full length attB sequence
+2. The full length attP sequence
+3. The full length attB-containing plasmid sequence
+
+
+The following requires [`seqkit`](https://bioconda.github.io/recipes/seqkit/README.html) and the latest development version of fgbio (2.0.3 with git-hash `da9ecbcc` or higher):
+
+```console
+# Get the FASTA and assembly report.  The latter is needed to deterministicall sort and name
+# the contigs downloaded in the FASTA
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.fna.gz
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_assembly_report.txt
+
+# Create a sequence dictionary (.dict) to sort and name the contigs
+java -Xmx2g -jar ~/work/git/fgbio/target/scala-2.13/fgbio-2.0.3-da9ecbcc-SNAPSHOT.jar CollectAlternateContigNames \
+    -i GCF_000001405.40_GRCh38.p14_assembly_report.txt \
+    -o GCF_000001405.40_GRCh38.p14_assembly_report.dict \
+    -p UcscName \
+    -a SequenceName AssignedMolecule GenBankAccession RefSeqAccession \
+    -s AssembledMolecule UnlocalizedScaffold UnplacedScaffold AltScaffold \
+   --sort-by-sequencing-role
+
+# Update the contig names and sort the contigs in the FASTA
+fgbio UpdateFastaContigNames \
+   -i GCF_000001405.40_GRCh38.p14_genomic.fna \
+   -d GCF_000001405.40_GRCh38.p14_assembly_report.dict \
+   -o GRCh38.p14.fasta \
+   --sort-by-dict \
+   --skip-missing
+
+# Build the final fasta and index it
+cat GRCh38.p14.fasta attB.fasta attP.fasta PL312.fasta | seqkit seq -w 60 - > GRCh38.p14.full.fasta
+samtools faidx GRCh38.p14.full.fasta
+samtools dict GRCh38.p14.full.fasta > GRCh38.p14.full.dict
+bwa index GRCh38.p14.full.fasta
 ```
 
 ### Execution
@@ -135,9 +181,7 @@ settings:
 
 The FASTQs for a given group are assumed to be in the given FASTQ directory, and named `<sample-name>_R1_001.fastq.gz` and `<sample-name>_R2_001.fastq.gz`.
 
-The reference for the Integrase samples should be the GRCh38 assembly with the PL312 whole plasmid appended.
-The reference for the CRISPR samples can be either the unmodified GRCh38 assembly or the reference used for the Integrase,
-but for ease of analysis should be the modified GRCh38 assembly.
+See [Reference Preparation](#reference-preparation) for how to prepare the reference genome.
 
 The config is organized at two levels: run and group level.
 The run level contains configuration that applies to all groups and samples, for example the paths to the `digenomitas` and `fgsv` JARs.
