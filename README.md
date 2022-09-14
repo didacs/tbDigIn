@@ -50,9 +50,13 @@ python setup.py develop
 
 - Build [`fgsv`][fgsv-link]
 
+A custom version must be built using the proposed changes in this [`fgsv` pull request](https://github.com/fulcrumgenomics/fgsv/pull/18).
+When this proposed changed is merged into `main` in `fgsv`, then this requirement should be removed.
+
 ```console
 git clone git@github.com:fulcrumgenomics/fgsv.git
 cd fgsv
+git checkout origin/fix-stack-overflow
 ./mill _.deployLocal
 java -jar jars/fgsv.jar -help
 cd ..
