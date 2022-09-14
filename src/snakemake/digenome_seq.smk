@@ -398,7 +398,6 @@ rule digenomitas_identify_cut_sites:
           --min-forward-reads={params.min_forward_reads} \
           --min-reverse-reads={params.min_reverse_reads} \
           --max-insert-size={params.max_insert_size} \
-          output_all_with_clipped_support
           --output-all-with-clipped-support={params.output_all_with_clipped_support} \
           {params.clipped_start_sequences} \
         &> {log}
