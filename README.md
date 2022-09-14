@@ -143,6 +143,7 @@ Execute the following command to run the pipeline
 
 ```console
 bash src/scripts/run_snakemake.sh \
+    -t /path/to/large/temp/directory \
     -s src/snakemake/digenome_seq.smk \
     -c /path/to/config.yml \
     -o /path/to/output
