@@ -34,7 +34,6 @@ def test_digenome_seq(tmpdir: TmpDir) -> None:
 
     # Set up the digenomitas JAR
     digenome_jar: Path = _touch_path(Path(tmpdir) / "digenome.jar")
-    fgsv_jar: Path = _touch_path(Path(tmpdir) / "fgsv.jar")
 
     rules: Dict[str, int] = {
         "align": 3,
@@ -52,7 +51,6 @@ def test_digenome_seq(tmpdir: TmpDir) -> None:
 
     config: Dict[str, Any] = {
         "digenome_jar": digenome_jar,
-        "fgsv_jar": fgsv_jar,
         "settings": [
             {
                 "name": "first",

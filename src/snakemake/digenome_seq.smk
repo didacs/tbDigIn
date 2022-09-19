@@ -60,7 +60,6 @@ def maybe_param(name: str, value: Optional[str]) -> str:
 
 # Required parameters
 digenome_jar: Path = path_from_config("digenome_jar")
-fgsv_jar: Path = path_from_config("fgsv_jar")
 
 # Read in the samples from the config
 samples = []
@@ -416,7 +415,6 @@ rule fgsv_svpileup:
         txt = "{group}/{sample}/{sample}.svpileup.txt",
         bam = "{group}/{sample}/{sample}.svpileup.bam"
     params:
-        jar = fgsv_jar,
         prefix = "{group}/{sample}/{sample}.svpileup",
     log: "logs/{group}/{sample}.fgsv_svpileup.log"
     resources:
@@ -424,10 +422,9 @@ rule fgsv_svpileup:
         jvm_gb=4
     shell:
         """
-        java \
+        fgsv \
           -Dsamjdk.use_async_io_read_samtools=true \
           -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xmx{resources.jvm_gb}g \
-          -jar {params.jar} \
           SvPileup \
           --input={input.bam} \
           --output={params.prefix} \
@@ -445,18 +442,15 @@ rule fgsv_aggregatesvpileup:
         txt = "{group}/{sample}/{sample}.svpileup.txt"
     output:
         txt = "{group}/{sample}/{sample}.svpileup.aggregated.txt",
-    params:
-        jar = fgsv_jar
     log: "logs/{group}/{sample}.fgsv_aggregatesvpileup.log"
     resources:
         mem_gb=5,
         jvm_gb=4
     shell:
         """
-        java \
+        fgsv \
           -Dsamjdk.use_async_io_read_samtools=true \
           -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xmx{resources.jvm_gb}g \
-          -jar {params.jar} \
           AggregateSvPileup \
           --input={input.txt} \
           --output={output.txt} \

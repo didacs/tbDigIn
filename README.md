@@ -48,22 +48,6 @@ mamba activate tbDigIn
 python setup.py develop
 ```
 
-- Build [`fgsv`][fgsv-link]
-
-A custom version must be built using the proposed changes in this [`fgsv` pull request](https://github.com/fulcrumgenomics/fgsv/pull/18).
-When this proposed changed is merged into `main` in `fgsv`, then this requirement should be removed.
-
-```console
-git clone git@github.com:fulcrumgenomics/fgsv.git
-cd fgsv
-git checkout origin/fix-stack-overflow
-./mill _.deployLocal
-java -jar jars/fgsv.jar -help
-cd ..
- ```
-
-The executable JAR for `fgsv` should be in `fgsv/jars/fgsv.jar`.
-
 ### Running Tests
 
 To run tests, execute:
@@ -153,7 +137,6 @@ An example `config.yml` is shown below:
 
 ```yaml
 digenome_jar: /path/to/digenome.jar
-fgsv_jar: /path/to/fgsv.jar
 settings:
   - name: crispr
     fq_dir: /path/to/directory/containing/fastqs
@@ -189,13 +172,12 @@ The FASTQs for a given group are assumed to be in the given FASTQ directory, and
 See [Reference Preparation](#reference-preparation) for how to prepare the reference genome.
 
 The config is organized at two levels: run and group level.
-The run level contains configuration that applies to all groups and samples, for example the paths to the `digenomitas` and `fgsv` JARs.
-The group level contains configuration that applies to related samples, for example the guide for specific CRISRP samples, or tool-specific parameters recommended for integrase samples.
+The run level contains configuration that applies to all groups and samples, for example the path to the `digenomitas` JAR.
+The group level contains configuration that applies to related samples, for example the guide for specific CRISPR samples, or tool-specific parameters recommended for integrase samples.
 
 | Config Key                | Description                                                                                        | Level  | Required | Default |
 |---------------------------|----------------------------------------------------------------------------------------------------|--------|----------|---------|
 | `digenome_jar`            | The path to the digenomitas JAR                                                                    | Run    | Yes      | NA      |
-| `fgsv_jar`                | The path to the fgsv JAR                                                                           | Run    | Yes      | NA      |
 | `fq_dir`                  | The directory containing FASTQs with suffixes `_R<#>_001.fastq.gz`                                 | Group  | Yes      | NA      |
 | `ref_fasta`               | The path to the reference FASTA, with accompanying BWA index files and FASTA index                 | Group  | Yes      | NA      |
 | `name`                    | The name of the sample (FASTQs must be `<name>_R<1 or 2>_001.fastq.gz`                             | Group  | Yes      | NA      |
@@ -226,4 +208,3 @@ Additionally, the following options should be specified for the Integrase sample
 3. `max_insert_size` set to `5000`.  This does not filter reads that map beyond the default (`1200`) due to longer than expected mappings in the plasmid sequence.
 
 [conda-link]: https://docs.conda.io/projects/conda/en/latest/user-guide/install/
-[fgsv-link]: https://github.com/fulcrumgenomics/fgsv

@@ -13,6 +13,7 @@ dependencies:
   - fastqc=0.11.9
   - multiqc=1.13a
   - samtools=1.15.1
+  - fgsv=0.0.1
   # pytomebio
   - defopt
   # Testing
