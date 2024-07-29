@@ -6,7 +6,7 @@ channels:
 dependencies:
   # Pipeline
   - python=3.9.12
-  - snakemake-minimal=7.9.0
+  - snakemake-minimal=7.32.4
   - bwa=0.7.17
   - picard=2.27.4  # can use picard-slim when R is not required
   - fgbio-minimal=2.0.2
