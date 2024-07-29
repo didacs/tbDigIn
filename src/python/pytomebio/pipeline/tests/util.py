@@ -32,7 +32,7 @@ class SnakemakeLogger(object):
             # NB: skip the first three and last two lines
             for counts_line in d["msg"].split("\n")[3:-2]:
                 counts_line = counts_line.strip()
-                job, count, _, _ = counts_line.split()
+                job, count = counts_line.split()
                 assert int(count) > 0, counts_line
 
                 self.rule_count[job] += int(count)
